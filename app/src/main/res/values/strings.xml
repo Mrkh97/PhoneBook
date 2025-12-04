@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">PhoneBook</string>
+    <string name="title_activity_search_input">SearchInput</string>
+</resources>
