@@ -19,5 +19,5 @@ data class ContactResponse(
     val phoneNumber: String,
 
     @SerializedName("profileImageUrl")
-    val profileImageUrl: String
+    val profileImageUrl: String?
 )

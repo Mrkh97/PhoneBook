@@ -1,9 +1,13 @@
 package com.enigmasolver.phonebook.shared
 
+import android.content.Context
+import androidx.room.Room
 import com.enigmasolver.phonebook.BuildConfig
+import com.enigmasolver.phonebook.features.contacts.data.ContactDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -43,5 +47,22 @@ object AppModule {
     @Singleton
     fun provideApiService(retrofit: Retrofit): ApiServices {
         return retrofit.create(ApiServices::class.java)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
+        return Room.databaseBuilder(
+            context,
+            AppDatabase::class.java,
+            "phonebook.db"
+        ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideContactDao(database: AppDatabase): ContactDao {
+        return database.contactDao()
     }
 }

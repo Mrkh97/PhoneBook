@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -16,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.enigmasolver.phonebook.R
@@ -27,11 +29,15 @@ fun SearchInput(
     placeholder: String = "",
     modifier: Modifier = Modifier,
     initialValue: String = "",
-    onValueChange: (String) -> Unit = {}
+    onValueChange: (String) -> Unit = {},
 ) {
+    val focusManager = LocalFocusManager.current
     val state = rememberTextFieldState(initialValue)
     LaunchedEffect(state.text) {
         onValueChange(state.text.toString())
+    }
+    LaunchedEffect(initialValue) {
+        state.setTextAndPlaceCursorAtEnd(initialValue)
     }
     TextField(
         state = state,
@@ -66,5 +72,8 @@ fun SearchInput(
             focusedContainerColor = Color.White,
             unfocusedContainerColor = Color.White,
         ),
+        onKeyboardAction = {
+            focusManager.clearFocus()
+        }
     )
 }
