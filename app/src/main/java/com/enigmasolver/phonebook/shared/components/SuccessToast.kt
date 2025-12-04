@@ -14,7 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -32,11 +32,12 @@ fun SuccessToast(message: String) {
             .padding(16.dp)
             .fillMaxWidth()
             .height(56.dp)
-            .shadow(
-                elevation = 4.dp,
+            .dropShadow(
+                shadow = androidx.compose.ui.graphics.shadow.Shadow(
+                    color = Color.Black.copy(alpha = 0.08f),
+                    radius = 16.dp
+                ),
                 shape = RoundedCornerShape(16.dp),
-                ambientColor = Color.Black.copy(alpha = 0.08f),
-                spotColor = Color.Black.copy(alpha = 0.08f)
             )
     ) {
         Row(

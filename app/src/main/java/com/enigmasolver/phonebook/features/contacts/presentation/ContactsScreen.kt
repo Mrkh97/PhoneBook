@@ -48,6 +48,7 @@ import com.enigmasolver.phonebook.features.contacts.presentation.components.AddC
 import com.enigmasolver.phonebook.features.contacts.presentation.components.ContactAvatar
 import com.enigmasolver.phonebook.features.contacts.presentation.components.ContactDetailSheet
 import com.enigmasolver.phonebook.features.contacts.presentation.components.DeleteContactSheet
+import com.enigmasolver.phonebook.features.contacts.presentation.components.UpdateContactSheet
 import com.enigmasolver.phonebook.shared.AsyncState
 import com.enigmasolver.phonebook.shared.components.SearchInput
 import com.enigmasolver.phonebook.shared.components.SwipeableItem
@@ -62,6 +63,7 @@ fun ContactsScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     var addContactOpen by remember { mutableStateOf(false) }
+    var updateContactOpen by remember { mutableStateOf(false) }
     var contactDetailOpen by remember { mutableStateOf(false) }
     var deleteContactOpen by remember { mutableStateOf(false) }
     var selectedContactId by remember { mutableStateOf("") }
@@ -144,13 +146,20 @@ fun ContactsScreen(
                             }
                         }
                     } else {
-                        ContactList(contacts = currentState.data, onDeleteContact = {
-                            selectedContactId = it
-                            deleteContactOpen = true
-                        }, onOpenDetail = {
-                            selectedContactId = it
-                            contactDetailOpen = true
-                        })
+                        ContactList(
+                            contacts = currentState.data,
+                            onDeleteContact = {
+                                selectedContactId = it
+                                deleteContactOpen = true
+                            },
+                            onOpenDetail = {
+                                selectedContactId = it
+                                contactDetailOpen = true
+                            },
+                            onUpdateContact = {
+                                selectedContactId = it
+                                updateContactOpen = true
+                            })
                     }
                 }
             }
@@ -163,11 +172,17 @@ fun ContactsScreen(
                     }
                 )
             }
+            if (updateContactOpen) {
+                UpdateContactSheet(
+                    contactId = selectedContactId,
+                    onDismissRequest = {
+                        updateContactOpen = false
+                    }
+                )
+            }
             if (deleteContactOpen) {
                 DeleteContactSheet(
                     contactId = selectedContactId,
-                    onCancelTapped = { deleteContactOpen = false },
-                    onContactDeleted = { deleteContactOpen = false },
                     onDismissRequest = { deleteContactOpen = false }
                 )
             }
@@ -187,7 +202,8 @@ fun ContactsScreen(
 fun ContactList(
     contacts: List<ContactResponse>,
     onDeleteContact: (String) -> Unit,
-    onOpenDetail: (String) -> Unit
+    onOpenDetail: (String) -> Unit,
+    onUpdateContact: (String) -> Unit
 ) {
     val groupedContacts = remember(contacts) {
         contacts.groupBy { it.firstName.first().uppercaseChar() }.toSortedMap()
@@ -205,7 +221,15 @@ fun ContactList(
 
             ) {
             groupedContacts.forEach { (initial, contactsForThisLetter) ->
-                item { ContactGroup(initial, contactsForThisLetter, onDeleteContact, onOpenDetail) }
+                item {
+                    ContactGroup(
+                        initial,
+                        contactsForThisLetter,
+                        onDeleteContact,
+                        onOpenDetail,
+                        onUpdateContact
+                    )
+                }
             }
         }
 
@@ -217,7 +241,8 @@ fun ContactGroup(
     initial: Char,
     contacts: List<ContactResponse>,
     onDeleteContact: (String) -> Unit,
-    onOpenDetail: (String) -> Unit
+    onOpenDetail: (String) -> Unit,
+    onUpdateContact: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -232,7 +257,9 @@ fun ContactGroup(
         )
         contacts.forEach { contact ->
             SwipeableItem(
-                onEdit = {},
+                onEdit = {
+                    onUpdateContact(contact.id)
+                },
                 onDelete = {
                     onDeleteContact(contact.id)
                 }

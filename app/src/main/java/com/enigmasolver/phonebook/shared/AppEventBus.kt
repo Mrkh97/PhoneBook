@@ -15,5 +15,6 @@ class AppEventBus @Inject constructor() {
 
 sealed interface AppEvent {
     data object RefreshContacts : AppEvent
+    data class RefreshContact(val contactId: String) : AppEvent
     data class ShowSuccessSnackbar(val message: String) : AppEvent
 }

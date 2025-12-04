@@ -36,8 +36,8 @@ class ContactsViewModel @Inject constructor(
             _uiState.value = AsyncState.Loading
 
             repository.listContacts()
-                .onSuccess { users ->
-                    _uiState.value = AsyncState.Success(users)
+                .onSuccess { contacts ->
+                    _uiState.value = AsyncState.Success(contacts)
                 }
                 .onFailure { error ->
                     _uiState.value = AsyncState.Error(error.message ?: "Unknown Error")

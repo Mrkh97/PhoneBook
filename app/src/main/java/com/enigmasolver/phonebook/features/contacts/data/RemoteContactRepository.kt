@@ -84,6 +84,28 @@ class RemoteContactRepository @Inject constructor(
         return Result.failure(Exception(response.messages?.joinToString(separator = ",")))
     }
 
+    suspend fun updateContact(
+        id: String,
+        name: String,
+        surname: String,
+        phone: String,
+        imageUrl: String?
+    ): Result<ContactResponse> {
+        val response = api.updateContactById(
+            id,
+            ContactRequest(
+                firstName = name,
+                lastName = surname,
+                phoneNumber = phone,
+                profileImageUrl = imageUrl
+            )
+        );
+        if (response.success) {
+            return Result.success(response.data)
+        }
+        return Result.failure(Exception(response.messages?.joinToString(separator = ",")))
+    }
+
     suspend fun getContactById(contactId: String): Result<ContactResponse> {
         val response = api.getContactById(contactId);
         if (response.success) {
