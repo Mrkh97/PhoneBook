@@ -43,7 +43,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
@@ -99,7 +99,14 @@ fun ContactDetailSheet(
 
         when (val currentState = state) {
             is AsyncState.Loading -> {
-                CircularProgressIndicator()
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight(0.85f)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             }
 
             is AsyncState.Error -> {
@@ -207,13 +214,14 @@ fun ContactDetailSheet(
                             onMainColorLoaded = { glowColor = it },
                             modifier = Modifier
                                 .size(96.dp)
-                                .shadow(
+                                .dropShadow(
                                     shape = RoundedCornerShape(999.dp),
-                                    elevation = 24.dp,
-                                    ambientColor = glowColor,
-                                    spotColor = glowColor,
-
-                                    )
+                                    shadow = androidx.compose.ui.graphics.shadow.Shadow(
+                                        color = glowColor,
+                                        radius = 48.dp,
+                                        spread = 0.dp
+                                    ),
+                                )
                         )
                         Spacer(modifier = Modifier.size(32.dp))
                         OutlinedInput(

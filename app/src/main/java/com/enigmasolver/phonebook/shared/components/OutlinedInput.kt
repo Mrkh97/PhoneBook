@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.enigmasolver.phonebook.shared.theme.AppColors
 import com.enigmasolver.phonebook.shared.theme.AppTypography
@@ -25,6 +26,7 @@ fun OutlinedInput(
     modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit = {}
 ) {
+    val focusManager = LocalFocusManager.current
     val state = rememberTextFieldState(initialValue)
     LaunchedEffect(state.text) {
         onValueChange(state.text.toString())
@@ -52,5 +54,8 @@ fun OutlinedInput(
             focusedContainerColor = Color.White,
             unfocusedContainerColor = Color.White,
         ),
+        onKeyboardAction = {
+            focusManager.clearFocus()
+        }
     )
 }

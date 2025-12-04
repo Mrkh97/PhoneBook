@@ -1,7 +1,7 @@
 package com.enigmasolver.phonebook.features.contacts.presentation.components
 
 import android.net.Uri
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -28,13 +30,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.enigmasolver.phonebook.R
 import com.enigmasolver.phonebook.features.contacts.presentation.ErrorContent
 import com.enigmasolver.phonebook.shared.AsyncState
 import com.enigmasolver.phonebook.shared.components.OutlinedInput
@@ -55,6 +55,7 @@ fun UpdateContactSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var selectPhotoOpen by remember { mutableStateOf(false) }
     var tempImageUri by remember { mutableStateOf<Uri?>(null) }
+    val scrollState = rememberScrollState()
 
     LaunchedEffect(contactId) {
         viewModel.fetchContact(contactId)
@@ -79,12 +80,21 @@ fun UpdateContactSheet(
                 onRetry = { viewModel.fetchContact(contactId) }
             )
 
-            AsyncState.Loading -> CircularProgressIndicator()
+            AsyncState.Loading -> Box(
+                modifier = Modifier
+                    .fillMaxHeight(0.85f)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+
             is AsyncState.Success -> Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxHeight(0.85f)
+                    .verticalScroll(scrollState)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -117,6 +127,8 @@ fun UpdateContactSheet(
                             .weight(1f)
                             .wrapContentWidth(Alignment.End)
                     ) {
+                        if (state.isLoading)
+                            CircularProgressIndicator(modifier = Modifier.size(16.dp))
                         Text(
                             "Done",
                             style = AppTypography.titleLargeBold
@@ -134,26 +146,13 @@ fun UpdateContactSheet(
                         contentScale = ContentScale.Crop
                     )
                 } else {
-                    when (val cState = contactState) {
-                        is AsyncState.Error -> Image(
-                            painter = painterResource(R.drawable.contact),
-                            modifier = Modifier.size(96.dp),
-                            contentDescription = "Contact Avatar"
-                        )
 
-                        is AsyncState.Loading -> Image(
-                            painter = painterResource(R.drawable.contact),
-                            modifier = Modifier.size(96.dp),
-                            contentDescription = "Contact Avatar"
-                        )
+                    ContactAvatar(
+                        imageUrl = cState.data.profileImageUrl,
+                        name = cState.data.firstName,
+                        modifier = Modifier.size(96.dp),
+                    )
 
-                        is AsyncState.Success ->
-                            ContactAvatar(
-                                imageUrl = cState.data.profileImageUrl,
-                                name = cState.data.firstName,
-                                modifier = Modifier.size(96.dp),
-                            )
-                    }
                 }
                 Spacer(modifier = Modifier.size(8.dp))
                 TextButton({

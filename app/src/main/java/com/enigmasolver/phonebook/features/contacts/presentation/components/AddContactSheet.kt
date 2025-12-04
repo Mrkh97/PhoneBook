@@ -12,7 +12,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -61,6 +64,7 @@ fun AddContactSheet(
         isPlaying = state.isSuccess,
         restartOnPlay = true
     )
+    val scrollState = rememberScrollState()
     var selectPhotoOpen by remember { mutableStateOf(false) }
     var tempImageUri by remember { mutableStateOf<Uri?>(null) }
 
@@ -83,6 +87,7 @@ fun AddContactSheet(
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxHeight(0.85f)
+                    .verticalScroll(scrollState)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -115,6 +120,8 @@ fun AddContactSheet(
                             .weight(1f)
                             .wrapContentWidth(Alignment.End)
                     ) {
+                        if (state.isLoading)
+                            CircularProgressIndicator(modifier = Modifier.size(16.dp))
                         Text(
                             "Done",
                             style = AppTypography.titleLargeBold

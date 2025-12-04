@@ -61,7 +61,7 @@ fun ContactAvatar(
                         if (bitmap != null) {
                             Palette.from(bitmap).generate { palette ->
                                 val dominantInt =
-                                    palette?.getVibrantColor(AndroidColor.TRANSPARENT)
+                                    palette?.getDominantColor(AndroidColor.TRANSPARENT)
 
                                 if (dominantInt != null && dominantInt != AndroidColor.TRANSPARENT) {
                                     onMainColorLoaded(Color(dominantInt))
